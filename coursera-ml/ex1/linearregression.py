@@ -109,10 +109,12 @@ class MyLinearRegressor(object):
             Labels vector
         """
         self.n_examples = len(X)
-        self.theta = np.zeros(2)
         
         x_zero = np.ones(len(X))
         X = np.column_stack([x_zero, X])
+       
+        n = X.shape[1] 
+        self.theta = np.zeros(n)
         
         J = self.compute_cost(X, y)
         print "Initial Cost: %.2f" % J
