@@ -17,18 +17,22 @@ class MyLinearRegressor(object):
     theta : numpy array-like matrix
         Paramaters to be learned
         
-    n_examples : int
-        Size of the training examples
+    n_features : int
+    normalize: boolean
+    
     """
     
-    def __init__(self, alpha=0.01, iters=100):
+    def __init__(self, alpha=0.01, iters=100, \
+                    n_features=1, normalize=False):
         self.alpha = alpha
         self.n_iter = iters
         self.n_examples = 0
-        
+        self.n_features = n_features
+        self.normalize = normalize
+         
         self.theta = None
         self.J_hist = np.zeros(self.n_iter) 
-        self.theta_hist = np.zeros((self.n_iter,2)) 
+        self.theta_hist = np.zeros((self.n_iter,n_features+1)) 
     
     def compute_cost(self, X, y):
         """Given a set of training examples, predictions, and parameters
@@ -95,7 +99,21 @@ class MyLinearRegressor(object):
             Predicted values
         """
         return np.dot(X, self.theta.T)
-        
+    
+    def normalize_features(self, X):
+        n_ex = X.shape[0]
+        n_fts = X.shape[1]
+        X_n = np.zeros((n_ex, n_fts))
+        for j in np.arange(n_fts):
+            xj = X[:,j]
+            muj = np.mean(xj)
+            sj = np.amax(xj) - np.amin(xj)
+            a = np.true_divide(\
+                        np.absolute(np.subtract(xj, muj)), \
+                            sj)
+            X_n[:,j] = a
+        return X_n
+
     def fit(self, X, y):
         """Determines the optimal weights/parameters
         for the model by using batch gradient descent 
@@ -110,9 +128,13 @@ class MyLinearRegressor(object):
         """
         self.n_examples = len(X)
         
+        if self.normalize:
+            print "Normalizing Features..."
+            X = self.normalize_features(X) 
+        
         x_zero = np.ones(len(X))
         X = np.column_stack([x_zero, X])
-       
+              
         n = X.shape[1] 
         self.theta = np.zeros(n)
         
@@ -188,7 +210,7 @@ if __name__ == "__main__":
     X_test = np.array([[1, 3.5], [1, 7.0]])
     
     regressor = MyLinearRegressor(alpha=0.01, \
-                                   iters=1500)
+                            iters=1500, n_features=1)
     #learn the weights
     regressor.fit(X,y)
     
