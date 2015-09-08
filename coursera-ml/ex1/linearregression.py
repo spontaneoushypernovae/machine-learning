@@ -35,9 +35,6 @@ class MyLinearRegressor(object):
 
     J_hist : numpy array
         Cost function output at each iteration        
-
-    theta_hist : numpy array-like matrix
-        Learned parameters at each iteration
         
     """
     
@@ -49,9 +46,8 @@ class MyLinearRegressor(object):
         self.n_features = n_features
         self.normalize = normalize
          
-        self.theta = None
+        self.theta = np.zeros(self.n_features+1)
         self.J_hist = np.zeros(self.n_iter) 
-        self.theta_hist = np.zeros((self.n_iter,n_features+1)) 
     
     def compute_cost(self, X, y):
         """Given a set of training examples, predictions, and parameters
@@ -98,7 +94,6 @@ class MyLinearRegressor(object):
             J = self.compute_cost(X, y)
             
             self.J_hist[i] = J
-            self.theta_hist[i] = self.theta
             
     def get_params(self):
         """Retrieves the weights of the trained model"""
@@ -166,10 +161,7 @@ class MyLinearRegressor(object):
 
         x_zero = np.ones(len(X))
         X = np.column_stack([x_zero, X])
-              
-        n = X.shape[1] 
-        self.theta = np.zeros(n)
-        
+                      
         J = self.compute_cost(X, y)
         print "Initial Cost: %.2f" % J
         
@@ -190,14 +182,18 @@ class MyLinearRegressor(object):
         """
         for x in X_test:
             y_pred = np.dot(x, self.theta.T)
-            print "Predicted: %.0f" % y_pred
-    
+            print "Predicted: %.3f" % y_pred
+   
 def load_data(input_file, delim=','):
     """Loads the data for our problem"""
     
     data = np.loadtxt(input_file, delimiter=delim)
-    X = data[:, 0]
-    y = data[:, 1]
+    n_features = data.shape[1]-1
+    if n_features == 1:
+        X = data[:,0]
+    else:
+        X = data[:,[0,n_features-1]]
+    y = data[:,n_features]
     assert len(X) == len(y)
     return X, y
 
@@ -240,9 +236,10 @@ if __name__ == "__main__":
     #load training/test data
     X, y = load_data(input_file)
     X_test = np.array([[1, 3.5], [1, 7.0]])
-    
+   
     regressor = MyLinearRegressor(alpha=0.01, \
                             iters=1500, n_features=1)
+
     #learn the weights
     regressor.fit(X,y)
     
@@ -253,4 +250,3 @@ if __name__ == "__main__":
     plot_gradient(X, regressor)
 
     #load data for multiple variable case
-    
