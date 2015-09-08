@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 class MyLinearRegressor(object):
     """Linear Regression for n-variables
     
-    Attributes
+    Parameters
     ----------
     alpha : float 
         (optional) Learning rate. Default=0.01
@@ -15,11 +15,30 @@ class MyLinearRegressor(object):
         Default=100
         
     theta : numpy array-like matrix
-        Paramaters to be learned
+        Parameters to be learned
         
     n_features : int
-    normalize: boolean
+        (optional) Number of features in training set
+        Default=1
     
+    normalize: boolean
+        (optional) Whether features should be normalized     
+        Default=False
+    
+    Attributes
+    ----------
+    n_examples : int
+        Number of training examples 
+
+    theta : numpy array-like matrix
+        Parameters to be learned by the regressor
+
+    J_hist : numpy array
+        Cost function output at each iteration        
+
+    theta_hist : numpy array-like matrix
+        Learned parameters at each iteration
+        
     """
     
     def __init__(self, alpha=0.01, iters=100, \
@@ -101,15 +120,28 @@ class MyLinearRegressor(object):
         return np.dot(X, self.theta.T)
     
     def normalize_features(self, X):
+        """This function normalizes each feature in the
+        dataset on a [0-1] scale
+
+        Parameters
+        ----------
+        X : numpy array-like matrix 
+            Training examples
+
+        Returns
+        -------
+        X_n : numpy array-like matrix
+            Normalized training examples
+        """
         n_ex = X.shape[0]
         n_fts = X.shape[1]
         X_n = np.zeros((n_ex, n_fts))
         for j in np.arange(n_fts):
             xj = X[:,j]
             muj = np.mean(xj)
-            sj = np.amax(xj) - np.amin(xj)
+            sj = np.std(xj) 
             a = np.true_divide(\
-                        np.absolute(np.subtract(xj, muj)), \
+                        np.subtract(xj, muj), \
                             sj)
             X_n[:,j] = a
         return X_n
@@ -131,7 +163,7 @@ class MyLinearRegressor(object):
         if self.normalize:
             print "Normalizing Features..."
             X = self.normalize_features(X) 
-        
+
         x_zero = np.ones(len(X))
         X = np.column_stack([x_zero, X])
               
@@ -157,7 +189,7 @@ class MyLinearRegressor(object):
         
         """
         for x in X_test:
-            y_pred = np.dot(x, self.theta.T) * 10000 
+            y_pred = np.dot(x, self.theta.T)
             print "Predicted: %.0f" % y_pred
     
 def load_data(input_file, delim=','):
@@ -219,3 +251,6 @@ if __name__ == "__main__":
     
     plot_decision(X, y, regressor)
     plot_gradient(X, regressor)
+
+    #load data for multiple variable case
+    
