@@ -1,4 +1,4 @@
-import os
+import math, sys, os
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -35,7 +35,6 @@ class MyLinearRegressor(object):
 
     J_hist : numpy array
         Cost function output at each iteration        
-        
     """
     
     def __init__(self, alpha=0.01, iters=100, \
@@ -66,8 +65,8 @@ class MyLinearRegressor(object):
         J : float
             Cost of the predictions under given parameters
         """
-        J = (1/float(2*self.n_examples)) * \
-                np.sum(np.square(self.decision_function(X) - y))
+        J = (1/(2*float(self.n_examples))) * \
+                np.sum(np.square((np.subtract(self.decision_function(X), y))))
         return J
     
     def compute_gradient(self, X, y):
@@ -83,12 +82,11 @@ class MyLinearRegressor(object):
         y : numpy array
             Labels vector
         """
-        
         for i in np.arange(self.n_iter):
             #update the weights
             self.theta = self.theta - \
-                            (self.alpha/float(self.n_examples)) * \
-                                np.dot(X.T, (self.decision_function(X) - y))
+                (self.alpha/float(self.n_examples)) * \
+                    np.dot(X.T, (np.subtract(self.decision_function(X), y)))
             
             #compute the updated cost
             J = self.compute_cost(X, y)
@@ -116,7 +114,13 @@ class MyLinearRegressor(object):
     
     def normalize_features(self, X):
         """This function normalizes each feature in the
-        dataset on a [0-1] scale
+        dataset on a [0-1] scale. The normalization formula
+        is as follows:
+
+        >>> x_j = (x_j - mu_j) / s_j
+
+        where mu_j is the mean of a given feature
+        and s_j is the standard deviation of the feature
 
         Parameters
         ----------
@@ -135,11 +139,31 @@ class MyLinearRegressor(object):
             xj = X[:,j]
             muj = np.mean(xj)
             sj = np.std(xj) 
-            a = np.true_divide(\
-                        np.subtract(xj, muj), \
-                            sj)
+            a = np.true_divide(np.subtract(xj, muj), sj)
             X_n[:,j] = a
         return X_n
+    
+    def normal_equations(self, X):
+        """Compute the optimal parameters using
+        the normal equations. This approach is the 
+        following matrix multiplication 
+        >>> theta = np.inv(X.T * X) (X.T *y)
+
+        Parameters
+        ----------
+        X : numpy array-like matrix
+            Training examples
+
+        Returns
+        -------
+        theta : numpy array
+            Optimal parameters
+        """
+        x_zero = np.ones(len(X))
+        X_ne = np.column_stack([x_zero, X])
+        theta = np.dot(np.linalg.inv(np.dot(X_ne.T, X_ne)), \
+                                        np.dot(X_ne.T, y))
+        return theta
 
     def fit(self, X, y):
         """Determines the optimal weights/parameters
@@ -156,19 +180,13 @@ class MyLinearRegressor(object):
         self.n_examples = len(X)
         
         if self.normalize:
-            print "Normalizing Features..."
             X = self.normalize_features(X) 
 
         x_zero = np.ones(len(X))
         X = np.column_stack([x_zero, X])
-                      
+        
         J = self.compute_cost(X, y)
-        print "Initial Cost: %.2f" % J
-        
         self.compute_gradient(X, y)
-        
-        print "Minimized Cost: %.2f" % self.J_hist[-1]
-        print "Optimal Thetas: %s" % self.theta
     
     def predict(self, X_test):
         """Predicts continuous value for unseen test
@@ -180,9 +198,11 @@ class MyLinearRegressor(object):
             Test set examples
         
         """
+        predictions = list()
         for x in X_test:
             y_pred = np.dot(x, self.theta.T)
-            print "Predicted: %.3f" % y_pred
+            predictions.append(y_pred)
+        return predictions
    
 def load_data(input_file, delim=','):
     """Loads the data for our problem"""
@@ -227,12 +247,26 @@ def plot_gradient(X, regressor):
     plt.yticks(np.arange(min(J_hist)-step, max(J_hist)+step, step))
     plt.plot(np.arange(len(J_hist)), J_hist, '.g', linewidth=0.2)
     plt.show()
+
+def plot_alpha_cost_hist(alphas, alpha_cost_hist):
+    plt.xlabel('Number of Iterations')
+    plt.ylabel('Cost J')
     
+    step = 5.0
+    color = ['b', 'r', 'g', 'k', 'b--', 'r--', '--k', '--g']
+    #TODO: add legend
+    for i, J in enumerate(alpha_cost_hist):
+        plt.plot(np.arange(len(J)), J, color[i]);
+        plt.xticks(np.arange(0, len(J)+step, step));    
+    plt.show() 
+
 if __name__ == "__main__":
+    
+    #=============== For one variable =================== 
     input_file = os.path.abspath(\
                     os.path.join(os.path.dirname(".."), \
                         "ex1data1.txt"))
-    
+   
     #load training/test data
     X, y = load_data(input_file)
     X_test = np.array([[1, 3.5], [1, 7.0]])
@@ -242,11 +276,67 @@ if __name__ == "__main__":
 
     #learn the weights
     regressor.fit(X,y)
+    print "Minimized Cost: %s" % regressor.J_hist[-1] 
+    print "Optimal Theta: %s" % regressor.theta
     
     #apply learned weights to test data
-    regressor.predict(X_test)
+    predictions = regressor.predict(X_test)
+    for y_pred in predictions:
+        print "Predicted: %.3f" % (y_pred * 10000)
     
     plot_decision(X, y, regressor)
     plot_gradient(X, regressor)
+    
+    #=============== For multiple variables =================== 
+    #load training/test data
+    input_file = os.path.abspath(\
+                    os.path.join(os.path.dirname(".."), \
+                        "ex1data2.txt"))
+    X, y = load_data(input_file)
+    X_test = np.array([[1, 1650, 3]])
+  
+    best_alpha = 0
+    min_cost = sys.maxint
+    best_theta = None
+    alpha_cost_hist = list()
+   
+    alphas = [1.3, 1.0, 0.3, 0.1, 0.03, 0.01, 0.003, 0.001] 
+    for i, alpha in enumerate(alphas):
+        regressor = MyLinearRegressor(alpha=alpha, \
+                    iters=50, n_features=2, normalize=True)
+        
+        regressor.fit(X,y)
+        alpha_cost_hist.append(regressor.J_hist)
+        cost = regressor.J_hist[-1]
+        
+        if cost <= min_cost:
+            min_cost = cost
+            best_alpha = alpha
+            best_theta = regressor.theta
+        
+    print "\nOptimal alpha=%s\nOptimal theta=%s" % (best_alpha, best_theta)
 
-    #load data for multiple variable case
+    plot_alpha_cost_hist(alphas, alpha_cost_hist)
+
+    #normalize each input feature in test example
+    X_test = np.array([[1, \
+                np.true_divide(\
+                    np.subtract(1650, np.mean(X[:,0])), \
+                        np.std(X[:,0])), \
+                
+                np.true_divide(\
+                    np.subtract(3, np.mean(X[:,1])), \
+                        np.std(X[:,1])) \
+                ]])
+    
+    price = np.dot(X_test, best_theta.T)
+    print "Predicted $%.0f" % price
+
+    #gradient minimization using the normal equations
+    theta = regressor.normal_equations(X)
+    x_test = np.array([[1, 1650, 3]])
+    price = np.dot(x_test, theta.T) 
+
+    print "\nOptimal theta: %s" % theta
+    print "Predicted Price: $%.0f" % price
+
