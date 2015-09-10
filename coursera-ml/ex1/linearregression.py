@@ -147,7 +147,7 @@ class MyLinearRegressor(object):
         """Compute the optimal parameters using
         the normal equations. This approach is the 
         following matrix multiplication 
-        >>> theta = np.inv(X.T * X) (X.T *y)
+        >>> theta = np.inv(X.T * X) (X.T * y)
 
         Parameters
         ----------
@@ -185,7 +185,7 @@ class MyLinearRegressor(object):
         x_zero = np.ones(len(X))
         X = np.column_stack([x_zero, X])
         
-        J = self.compute_cost(X, y)
+        self.compute_cost(X, y)
         self.compute_gradient(X, y)
     
     def predict(self, X_test):
