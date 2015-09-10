@@ -185,7 +185,6 @@ class MyLinearRegressor(object):
         x_zero = np.ones(len(X))
         X = np.column_stack([x_zero, X])
         
-        self.compute_cost(X, y)
         self.compute_gradient(X, y)
     
     def predict(self, X_test):
