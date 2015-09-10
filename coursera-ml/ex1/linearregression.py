@@ -253,10 +253,11 @@ def plot_alpha_cost_hist(alphas, alpha_cost_hist):
     
     step = 5.0
     color = ['b', 'r', 'g', 'k', 'b--', 'r--', '--k', '--g']
-    #TODO: add legend
     for i, J in enumerate(alpha_cost_hist):
-        plt.plot(np.arange(len(J)), J, color[i]);
+        plt.plot(np.arange(len(J)), J, color[i], label='{0:0.3f}'
+                 ''.format(alphas[i]));
         plt.xticks(np.arange(0, len(J)+step, step));    
+    plt.legend(loc="lower right")
     plt.show() 
 
 if __name__ == "__main__":
