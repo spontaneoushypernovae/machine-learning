@@ -211,7 +211,7 @@ def load_data(input_file, delim=','):
     if n_features == 1:
         X = data[:,0]
     else:
-        X = data[:,[0,n_features-1]]
+        X = data[:,np.arange(n_features)]
     y = data[:,n_features]
     assert len(X) == len(y)
     return X, y
