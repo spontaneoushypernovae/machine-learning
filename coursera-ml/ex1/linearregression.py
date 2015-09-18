@@ -204,7 +204,26 @@ class MyLinearRegressor(object):
         return predictions
    
 def load_data(input_file, delim=','):
-    """Loads the data for our problem"""
+    """Load dataset from file. Expects examples
+    in the rows, features in the columns and 
+    truth labels in the last column. 
+    
+    Parameters
+    ----------
+    input_file : str
+        Path to input data file
+        
+    delim : str
+        Type of delimiter for each field
+        
+    Returns
+    -------
+    X : numpy-like matrix
+        Feature Matrix from input data
+        
+    y : numpy array
+        Labels vector
+    """
     
     data = np.loadtxt(input_file, delimiter=delim)
     n_features = data.shape[1]-1
