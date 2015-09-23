@@ -1,6 +1,7 @@
-import math, sys, os
+import sys, os
 import numpy as np
 import matplotlib.pyplot as plt
+
 
 class MyLinearRegressor(object):
     """Linear Regression for n-variables
@@ -37,8 +38,7 @@ class MyLinearRegressor(object):
         Cost function output at each iteration        
     """
     
-    def __init__(self, alpha=0.01, iters=100, \
-                    n_features=1, normalize=False):
+    def __init__(self, alpha=0.01, iters=100, n_features=1, normalize=False):
         self.alpha = alpha
         self.n_iter = iters
         self.n_examples = 0
@@ -117,7 +117,7 @@ class MyLinearRegressor(object):
         dataset on a [0-1] scale. The normalization formula
         is as follows:
 
-        >>> x_j = (x_j - mu_j) / s_j
+        >>> x_j = (xj - muj) / sj
 
         where mu_j is the mean of a given feature
         and s_j is the standard deviation of the feature
@@ -161,8 +161,8 @@ class MyLinearRegressor(object):
         """
         x_zero = np.ones(len(X))
         X_ne = np.column_stack([x_zero, X])
-        theta = np.dot(np.linalg.inv(np.dot(X_ne.T, X_ne)), \
-                                        np.dot(X_ne.T, y))
+        theta = np.dot(np.linalg.inv(np.dot(X_ne.T, X_ne)),
+                       np.dot(X_ne.T, y))
         return theta
 
     def fit(self, X, y):
@@ -202,7 +202,8 @@ class MyLinearRegressor(object):
             y_pred = np.dot(x, self.theta.T)
             predictions.append(y_pred)
         return predictions
-   
+
+
 def load_data(input_file, delim=','):
     """Load dataset from file. Expects examples
     in the rows, features in the columns and 
@@ -235,6 +236,7 @@ def load_data(input_file, delim=','):
     assert len(X) == len(y)
     return X, y
 
+
 def plot_decision(X, y, regressor):
     plt.title('Distribution of Profits by Population') 
     plt.xlabel('City Population (in 10,000s)')
@@ -249,10 +251,11 @@ def plot_decision(X, y, regressor):
     plt.xticks(np.arange(min(x_ticks)-step, max(x_ticks)+step, step))
     plt.xlim(0, max(x_ticks)+step)
     plt.ylim(0, max(y)+step)
-    plt.scatter(X, y, s=50, marker='x', c='r');
-    plt.plot(X, np.dot(X_n, theta.T), '--b');
-    plt.plot([0,max(X)], [1,max(X)], '--k');
+    plt.scatter(X, y, s=50, marker='x', c='r')
+    plt.plot(X, np.dot(X_n, theta.T), '--b')
+    plt.plot([0,max(X)], [1,max(X)], '--k')
     plt.show()
+
 
 def plot_gradient(X, regressor):
     plt.title('Gradient Distribution') 
@@ -265,6 +268,7 @@ def plot_gradient(X, regressor):
     plt.yticks(np.arange(min(J_hist)-step, max(J_hist)+step, step))
     plt.plot(np.arange(len(J_hist)), J_hist, '.g', linewidth=0.2)
     plt.show()
+
 
 def plot_alpha_cost_hist(alphas, alpha_cost_hist):
     plt.xlabel('Number of Iterations')
@@ -279,19 +283,18 @@ def plot_alpha_cost_hist(alphas, alpha_cost_hist):
     plt.legend(loc="lower right")
     plt.show() 
 
+
 if __name__ == "__main__":
     
     #=============== For one variable =================== 
-    input_file = os.path.abspath(\
-                    os.path.join(os.path.dirname(".."), \
-                        "ex1data1.txt"))
+    input_file = os.path.abspath(os.path.join(os.path.dirname(".."), "ex1data1.txt"))
    
     #load training/test data
     X, y = load_data(input_file)
     X_test = np.array([[1, 3.5], [1, 7.0]])
    
-    regressor = MyLinearRegressor(alpha=0.01, \
-                            iters=1500, n_features=1)
+    regressor = MyLinearRegressor(alpha=0.01,
+                                  iters=1500, n_features=1)
 
     #learn the weights
     regressor.fit(X,y)
@@ -308,8 +311,8 @@ if __name__ == "__main__":
     
     #=============== For multiple variables =================== 
     #load training/test data
-    input_file = os.path.abspath(\
-                    os.path.join(os.path.dirname(".."), \
+    input_file = os.path.abspath(
+                    os.path.join(os.path.dirname(".."),
                         "ex1data2.txt"))
     X, y = load_data(input_file)
     X_test = np.array([[1, 1650, 3]])
@@ -338,14 +341,14 @@ if __name__ == "__main__":
     plot_alpha_cost_hist(alphas, alpha_cost_hist)
 
     #normalize each input feature in test example
-    X_test = np.array([[1, \
-                np.true_divide(\
-                    np.subtract(1650, np.mean(X[:,0])), \
-                        np.std(X[:,0])), \
+    X_test = np.array([[1,
+                np.true_divide(
+                    np.subtract(1650, np.mean(X[:,0])),
+                        np.std(X[:,0])),
                 
-                np.true_divide(\
-                    np.subtract(3, np.mean(X[:,1])), \
-                        np.std(X[:,1])) \
+                np.true_divide(
+                    np.subtract(3, np.mean(X[:,1])),
+                        np.std(X[:,1]))
                 ]])
     
     price = np.dot(X_test, best_theta.T)
