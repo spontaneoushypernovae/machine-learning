@@ -257,7 +257,7 @@ class MyLogisticRegression(object):
         numpy array
             Predictions for test set examples
         """
-        X, _, _ = clf.normalize_features(X)
+        X, _, _ = self.normalize_features(X)
         X = np.column_stack([np.ones(len(X)), X])
 
         y_pred = np.zeros((X.shape[0], 1))
