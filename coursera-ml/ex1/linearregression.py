@@ -253,7 +253,7 @@ def plot_decision(X, y, regressor):
     plt.ylim(0, max(y)+step)
     plt.scatter(X, y, s=50, marker='x', c='r')
     plt.plot(X, np.dot(X_n, theta.T), '--b')
-    plt.plot([0,max(X)], [1,max(X)], '--k')
+    plt.plot([0,max(X+4)], [1,max(X+4)], '--k');
     plt.show()
 
 
