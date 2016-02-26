@@ -6,5 +6,6 @@
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="module" module-name="ex2" />
     <orderEntry type="module" module-name="wikiambiguation" />
+    <orderEntry type="module" module-name="theer" />
   </component>
 </module>

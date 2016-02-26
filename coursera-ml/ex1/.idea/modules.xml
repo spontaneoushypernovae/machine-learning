@@ -4,6 +4,7 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/ex1.iml" filepath="$PROJECT_DIR$/.idea/ex1.iml" />
       <module fileurl="file://$PROJECT_DIR$/../ex2/.idea/ex2.iml" filepath="$PROJECT_DIR$/../ex2/.idea/ex2.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../../../theer/.idea/theer.iml" filepath="$PROJECT_DIR$/../../../theer/.idea/theer.iml" />
       <module fileurl="file://$PROJECT_DIR$/../../../productionalization/wikiambiguation/.idea/wikiambiguation.iml" filepath="$PROJECT_DIR$/../../../productionalization/wikiambiguation/.idea/wikiambiguation.iml" />
     </modules>
   </component>
