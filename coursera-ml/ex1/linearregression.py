@@ -298,13 +298,13 @@ if __name__ == "__main__":
 
     #learn the weights
     regressor.fit(X,y)
-    print "Minimized Cost: %s" % regressor.J_hist[-1] 
-    print "Optimal Theta: %s" % regressor.theta
+    print("Minimized Cost: %s" % regressor.J_hist[-1])
+    print("Optimal Theta: %s" % regressor.theta)
     
     #apply learned weights to test data
     predictions = regressor.predict(X_test)
     for y_pred in predictions:
-        print "Predicted: %.3f" % (y_pred * 10000)
+        print("Predicted: %.3f" % (y_pred * 10000))
     
     plot_decision(X, y, regressor)
     plot_gradient(X, regressor)
@@ -318,10 +318,11 @@ if __name__ == "__main__":
     X_test = np.array([[1, 1650, 3]])
   
     best_alpha = 0
-    min_cost = sys.maxint
+    min_cost = float("inf")
     best_theta = None
     alpha_cost_hist = list()
-   
+
+    print("Training the model...")   
     alphas = [1.3, 1.0, 0.3, 0.1, 0.03, 0.01, 0.003, 0.001] 
     for i, alpha in enumerate(alphas):
         regressor = MyLinearRegressor(alpha=alpha, \
@@ -336,7 +337,7 @@ if __name__ == "__main__":
             best_alpha = alpha
             best_theta = regressor.theta
         
-    print "\nOptimal alpha=%s\nOptimal theta=%s" % (best_alpha, best_theta)
+    print("\nOptimal alpha=%s\nOptimal theta=%s" % (best_alpha, best_theta))
 
     plot_alpha_cost_hist(alphas, alpha_cost_hist)
 
@@ -352,13 +353,13 @@ if __name__ == "__main__":
                 ]])
     
     price = np.dot(X_test, best_theta.T)
-    print "Predicted $%.0f" % price
+    print("Predicted $%.0f" % price)
 
     #gradient minimization using the normal equations
     theta = regressor.normal_equations(X)
     x_test = np.array([[1, 1650, 3]])
     price = np.dot(x_test, theta.T) 
 
-    print "\nOptimal theta: %s" % theta
-    print "Predicted Price: $%.0f" % price
+    print("\nOptimal theta: %s" % theta)
+    print("Predicted Price: $%.0f" % price)
 
